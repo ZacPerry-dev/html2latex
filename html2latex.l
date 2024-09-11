@@ -101,26 +101,51 @@ int list_type;
 }
 
 "<pre>" {
-  printf( "\\begin{verbatim}\n");
+  printf( "\\begin{verbatim}");
   BEGIN PRE;
 }
-
 <PRE>. {
   printf("%s", yytext);
 }
-
 <PRE>"</pre>" {
-  printf("\\end{verbatim}\n");
+  printf("\\end{verbatim}");
   BEGIN 0;
 }
 
 "<p>" {
-  printf( "\\par" ); 
+  printf("\n");
   BEGIN PARA;
 }
-
 <PARA>"</p>" {
-  printf("\n");
+  printf("\n\n");
+  BEGIN 0;
+}
+
+"<ol>" {
+  printf("\\begin{enumerate}");
+  BEGIN OL;
+}
+<OL>"<li>"[^<]*"</li>" {
+  // strip off the beginning and ending tags and then just print the rest of yytext
+  yytext[yyleng-5] = 0;
+  printf("\\item %s\n", yytext+4); 
+}
+<OL>"</ol>" {
+  printf("\\end{enumerate}\n");
+  BEGIN 0;
+}
+
+
+"<ul>" {
+  printf("\\begin{itemize}");
+  BEGIN UL;
+}
+<UL>"<li>"[^<]*"</li>" {
+  yytext[yyleng-5] = 0;
+  printf("\\item %s\n", yytext+4);
+}
+<UL>"</ul>" {
+  printf("\\end{itemize}\n");
   BEGIN 0;
 }
 
