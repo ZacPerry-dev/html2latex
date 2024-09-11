@@ -21,6 +21,26 @@ int list_type;
     printf( "\\section{%s}", yytext+4 );
 }
 
+"<h2>"[^<]*"</h2>" {
+    /**************************************************************************
+     * Matched an HTML H2 header so print it out as a LateX subsection title.
+     * The beginning and ending tags need to be stripped off before the
+     * title can be formatted in LateX.
+     *************************************************************************/
+    yytext[yyleng-5] = 0;
+    printf( "\\subsection{%s}", yytext+4 );
+}
+
+"<h3>"[^<]*"</h3>" {
+    /**************************************************************************
+     * Matched an HTML H3 header so print it out as a LateX subsubsection title.
+     * The beginning and ending tags need to be stripped off before the
+     * title can be formatted in LateX.
+     *************************************************************************/
+    yytext[yyleng-5] = 0;
+    printf( "\\subsubsection{%s}", yytext+4 );
+}
+
 "<!--" {
     /**************************************************************************
      * Matched an HTML comment so print it out as a LateX comment. The
@@ -78,6 +98,30 @@ int list_type;
      * the text as is.
      *************************************************************************/
     printf( "%s", yytext );
+}
+
+"<pre>" {
+  printf( "\\begin{verbatim}\n");
+  BEGIN PRE;
+}
+
+<PRE>. {
+  printf("%s", yytext);
+}
+
+<PRE>"</pre>" {
+  printf("\\end{verbatim}\n");
+  BEGIN 0;
+}
+
+"<p>" {
+  printf( "\\par" ); 
+  BEGIN PARA;
+}
+
+<PARA>"</p>" {
+  printf("\n");
+  BEGIN 0;
 }
 
 %%
