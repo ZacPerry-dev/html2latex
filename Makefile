@@ -27,7 +27,9 @@ test: html2latex test.pdf
 clean:
 	$(RM) *.o
 	$(RM) *.lex.c
-	$(RM) *.tex *.log *.aux *.pdf
+#	$(RM) *.tex *.log *.aux *.pdf
+	$(RM) *.tex *.log *.aux 
+
 	$(RM) html2latex
 
 .PRECIOUS: test.tex
