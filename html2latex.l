@@ -116,6 +116,18 @@ int list_type;
   printf("\n");
   BEGIN PARA;
 }
+<PARA>"<small>"[^<]*"</small>" {
+  yytext[yyleng-8] = 0;
+  printf("\\scriptsize{%s}", yytext + 7);
+}
+
+<PARA>"<b>"[^<]*"</b>" {
+  // Strip off the bold tags then print text inside of /textbf{} 
+  // convert test to bold 
+  
+  yytext[yyleng-4] = 0;
+  printf("\\textbf{%s}", yytext + 3);
+}
 <PARA>"</p>" {
   printf("\n\n");
   BEGIN 0;
