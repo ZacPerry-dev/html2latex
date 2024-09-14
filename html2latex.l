@@ -100,6 +100,7 @@ int list_type;
     printf( "%s", yytext );
 }
 
+
 "<pre>" {
   printf( "\\begin{verbatim}");
   BEGIN PRE;
@@ -112,26 +113,57 @@ int list_type;
   BEGIN 0;
 }
 
+
 "<p>" {
   printf("\n");
   BEGIN PARA;
 }
 <PARA>"<small>"[^<]*"</small>" {
+  // SMALL -> strip off the tags
   yytext[yyleng-8] = 0;
-  printf("\\scriptsize{%s}", yytext + 7);
+  printf("{\\scriptsize %s}", yytext + 7);
 }
-
+<PARA>"<big>"[^<]*"</big>" {
+  // BIG -> Strip off tags
+  yytext[yyleng - 6] = 0;
+  printf("{\\Large %s}", yytext + 5);
+}
 <PARA>"<b>"[^<]*"</b>" {
-  // Strip off the bold tags then print text inside of /textbf{} 
-  // convert test to bold 
-  
+  // BOLD -> strip off tags
   yytext[yyleng-4] = 0;
   printf("\\textbf{%s}", yytext + 3);
+}
+<PARA>"<i>"[^<]*"</i>" {
+  // ITALICIZE
+  yytext[yyleng - 4] = 0; 
+  printf("\\textit{%s}", yytext + 3);
+}
+<PARA>"<strong>"[^<]*"</strong>" {
+  // STRONG
+  yytext[yyleng - 9] = 0;
+  printf("\\textmd{%s}", yytext + 8);
+}
+<PARA>"<em>"[^<]*"</em>" {
+  // EMPHASIZE
+  yytext[yyleng - 5] = 0;
+  printf("\\emph{%s}", yytext + 4);
+}
+<PARA>"<sup>"[^<]*"</sup>" {
+  // SUPERSCRIPT
+  yytext[yyleng - 6] = 0;
+  printf("\\textsuperscript{%s}", yytext + 5);
+}
+<PARA>"<sub>"[^<]*"</sub>" {
+  // SUBSCRIPT
+  yytext[yyleng - 6] = 0; 
+  printf("\\textsubscript{%s}", yytext + 5);
 }
 <PARA>"</p>" {
   printf("\n\n");
   BEGIN 0;
 }
+
+
 
 "<ol>" {
   printf("\\begin{enumerate}");
@@ -148,6 +180,7 @@ int list_type;
 }
 
 
+
 "<ul>" {
   printf("\\begin{itemize}");
   BEGIN UL;
@@ -157,7 +190,7 @@ int list_type;
   printf("\\item %s\n", yytext+4);
 }
 <UL>"</ul>" {
-  printf("\\end{itemize}\n");
+  printf("\\end{itemize}");
   BEGIN 0;
 }
 
