@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+// List type represents the current list (OL or UL) for the LI element
 int list_type;
 %}
 
@@ -115,7 +115,6 @@ int list_type;
 
 
 "<p>" {
-  printf("\n");
   BEGIN PARA;
 }
 <PARA>"<small>"[^<]*"</small>" {
@@ -169,14 +168,13 @@ int list_type;
   printf("\\begin{enumerate}");
   BEGIN OL;
 }
-<OL>"<li>"[^<]*"</li>" {
-  // strip off the beginning and ending tags and then just print the rest of yytext
-  yytext[yyleng-5] = 0;
-  printf("\\item %s\n", yytext+4); 
-}
 <OL>"</ol>" {
   printf("\\end{enumerate}\n");
   BEGIN 0;
+}
+<OL>"<li>" {
+  list_type = 1;
+  BEGIN LI;
 }
 
 
@@ -185,13 +183,35 @@ int list_type;
   printf("\\begin{itemize}");
   BEGIN UL;
 }
-<UL>"<li>"[^<]*"</li>" {
-  yytext[yyleng-5] = 0;
-  printf("\\item %s\n", yytext+4);
-}
+
 <UL>"</ul>" {
-  printf("\\end{itemize}");
+  printf("\\end{itemize}\n");
   BEGIN 0;
+}
+<UL>"<li>" {
+  list_type = 2;
+  printf("\\item ");
+  BEGIN LI;
+}
+
+<LI>"<small>"[^>]*"</small>" {
+  // LI SMALL
+  yytext[yyleng-8] = 0;
+  printf("{\\scriptsize %s}", yytext + 7);
+}
+<LI>"<b>"[^>]*"</b>" { 
+  // LI BOLD
+  yytext[yyleng-4] = 0;
+  printf("\\textbf{%s}\n", yytext+3);
+}
+
+<LI>"</li>" {
+  if (list_type == 1) {
+    BEGIN OL;
+  }
+  else if (list_type == 2) {
+    BEGIN UL;
+  }
 }
 
 %%

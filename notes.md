@@ -20,3 +20,9 @@ NOTE: Need to go back and add more for pre and paragraph to allow for nested stu
 
 NOTE:
 - Go back and test with different HTML files -> Run mine then the sol fil. Compare the LaTeX files to see if mine is correct. 
+
+NOTE: 
+- For list items: Start LI -> do same thing as paragraph
+  - LI is weird. Right now, trying to get it to also just print regular list items is tough.
+- NOTE: may need to go back and change Paragraph for something? 
+
