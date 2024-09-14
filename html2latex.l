@@ -109,7 +109,7 @@ int list_type;
   printf("%s", yytext);
 }
 <PRE>"</pre>" {
-  printf("\\end{verbatim}");
+  printf("\\end{verbatim}\n");
   BEGIN 0;
 }
 
@@ -174,6 +174,7 @@ int list_type;
 }
 <OL>"<li>" {
   list_type = 1;
+  printf("\\item ");
   BEGIN LI;
 }
 
@@ -199,13 +200,45 @@ int list_type;
   yytext[yyleng-8] = 0;
   printf("{\\scriptsize %s}", yytext + 7);
 }
+<LI>"<big>"[^>]*"</big>" {
+  // LI BIG
+  yytext[yyleng - 6] = 0;
+  printf("{\\Large %s}", yytext + 5);
+}
 <LI>"<b>"[^>]*"</b>" { 
   // LI BOLD
   yytext[yyleng-4] = 0;
-  printf("\\textbf{%s}\n", yytext+3);
+  printf("\\textbf{%s}", yytext+3);
+}
+<LI>"<i>"[^>]*"</i>" {
+  // ITALICIZE
+  yytext[yyleng - 4] = 0; 
+  printf("\\textit{%s}", yytext + 3);
+}
+<LI>"<strong>"[^>]*"</strong>" {
+  // STRONG
+  yytext[yyleng - 9] = 0;
+  printf("\\textmd{%s}", yytext + 8);
+}
+<LI>"<em>"[^>]*"</em>" {
+  // EMPHASIZE
+  yytext[yyleng - 5] = 0;
+  printf("\\emph{%s}", yytext + 4);
+}
+<LI>"<sup>"[^>]*"</sup>" {
+  // SUPERSCRIPT
+  yytext[yyleng - 6] = 0;
+  printf("\\textsuperscript{%s}", yytext + 5);
+}
+<LI>"<sub>"[^>]*"</sub>" {
+  // SUBSCRIPT
+  yytext[yyleng - 6] = 0; 
+  printf("\\textsubscript{%s}", yytext + 5);
 }
 
+
 <LI>"</li>" {
+  printf("\n");
   if (list_type == 1) {
     BEGIN OL;
   }
