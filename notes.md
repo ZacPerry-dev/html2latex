@@ -1,4 +1,4 @@
-# Lab notes (9/6) from lecture
+## Random notes
 
 - writing lex code to create a parser
     
@@ -21,3 +21,4 @@ TODO:
 - Create more html test files and play around -- make sure it works for diffrent cases
 - Comments
 - Report
+- Update makefile at some point? 
