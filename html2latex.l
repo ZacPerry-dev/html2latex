@@ -137,7 +137,7 @@ int list_type;
   /**************************************************************************
    * Support for the HTML <small> element within a paragraph. 
    * Will convert the <small> element, along with all text within it, to the
-   * LaTeX equivilent (scriptsize). 
+   * LaTeX equivalent (scriptsize). 
    *************************************************************************/
   
   // Stip off the </small> tag from the end and output starting after the <small> tag
@@ -149,7 +149,7 @@ int list_type;
     /***********************************************************************
      * Support for the HTML <big> element within a paragraph. 
      * Will convert the <big> element, along with all text within it, to the
-     * LaTeX equivilent
+     * LaTeX equivalent
      ***********************************************************************/
   yytext[yyleng - 6] = 0;
   printf("{\\Large %s}", yytext + 5);
@@ -159,7 +159,7 @@ int list_type;
   /**************************************************************************
    * Support for the HTML <b> tag within a paragraph. 
    * Will convert the <b> element, along with any text within into the 
-   * LaTeX equivilent \textbf{}
+   * LaTeX equivalent \textbf{}
    *************************************************************************/
   yytext[yyleng-4] = 0;
   printf("\\textbf{%s}", yytext + 3);
@@ -169,7 +169,7 @@ int list_type;
   /**************************************************************************
    * Support for the HTML <i> tag within a paragraph.
    * Will convert the <i> elements, along with all text, into the LaTeX
-   * equivilent \textit{}
+   * equivalent \textit{}
    *************************************************************************/
   yytext[yyleng - 4] = 0; 
   printf("\\textit{%s}", yytext + 3);
@@ -179,7 +179,7 @@ int list_type;
   /**************************************************************************
    * Support for the HTML <strong> tag within a paragraph.  
    * Will convert the <strong> element, along with all text within, into the 
-   * LaTeX equivilent,\textmd{}
+   * LaTeX equivalent,\textmd{}
    *************************************************************************/
   yytext[yyleng - 9] = 0;
   printf("\\textmd{%s}", yytext + 8);
