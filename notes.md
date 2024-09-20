@@ -1,4 +1,4 @@
-## Random notes
+# Lab notes (9/6) from lecture
 
 - writing lex code to create a parser
     
@@ -16,9 +16,6 @@
 - to run: pandoc -test.tex -o test.pdf
 
 TODO: 
-- Clean up logic and nesting stuff
-- Look into the weird whitespace issue
+- Look into the weird whitespace issue (i dont remember what this is refering to)
 - Create more html test files and play around -- make sure it works for diffrent cases
-- Comments
 - Report
-- Update makefile at some point? 

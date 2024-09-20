@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 // List type represents the current list (OL or UL) for the LI element
 int list_type;
 %}
@@ -133,64 +134,90 @@ int list_type;
   BEGIN PARA;
 }
 <PARA>"<small>"[^<]*"</small>" {
-  // SMALL -> strip off the tags
   /**************************************************************************
+   * Support for the HTML <small> element within a paragraph. 
+   * Will convert the <small> element, along with all text within it, to the
+   * LaTeX equivilent (scriptsize). 
    *************************************************************************/
- 
+  
+  // Stip off the </small> tag from the end and output starting after the <small> tag
   yytext[yyleng-8] = 0;
   printf("{\\scriptsize %s}", yytext + 7);
 }
+
 <PARA>"<big>"[^<]*"</big>" {
-  // BIG -> Strip off tags
-    /**************************************************************************
-   *************************************************************************/
+    /***********************************************************************
+     * Support for the HTML <big> element within a paragraph. 
+     * Will convert the <big> element, along with all text within it, to the
+     * LaTeX equivilent
+     ***********************************************************************/
   yytext[yyleng - 6] = 0;
   printf("{\\Large %s}", yytext + 5);
 }
+
 <PARA>"<b>"[^<]*"</b>" {
-  // BOLD -> strip off tags
   /**************************************************************************
+   * Support for the HTML <b> tag within a paragraph. 
+   * Will convert the <b> element, along with any text within into the 
+   * LaTeX equivilent \textbf{}
    *************************************************************************/
   yytext[yyleng-4] = 0;
   printf("\\textbf{%s}", yytext + 3);
 }
+
 <PARA>"<i>"[^<]*"</i>" {
-  // ITALICIZE
-    /**************************************************************************
+  /**************************************************************************
+   * Support for the HTML <i> tag within a paragraph.
+   * Will convert the <i> elements, along with all text, into the LaTeX
+   * equivilent \textit{}
    *************************************************************************/
   yytext[yyleng - 4] = 0; 
   printf("\\textit{%s}", yytext + 3);
 }
+
 <PARA>"<strong>"[^<]*"</strong>" {
-  // STRONG
   /**************************************************************************
+   * Support for the HTML <strong> tag within a paragraph.  
+   * Will convert the <strong> element, along with all text within, into the 
+   * LaTeX equivilent,\textmd{}
    *************************************************************************/
   yytext[yyleng - 9] = 0;
   printf("\\textmd{%s}", yytext + 8);
 }
+
 <PARA>"<em>"[^<]*"</em>" {
-  // EMPHASIZE
   /**************************************************************************
+   * Support for the HTML tag <em> within a paragraph.
+   * Will convert the <em> tag, and all text within, to its LaTeX equivalent
+   * \emph{}.
    *************************************************************************/
   yytext[yyleng - 5] = 0;
   printf("\\emph{%s}", yytext + 4);
 }
+
 <PARA>"<sup>"[^<]*"</sup>" {
-  // SUPERSCRIPT
   /**************************************************************************
+   * Support for the HTML tag <sup> within a paragraph. 
+   * Will convert the <sup> tag, and all text within, into it's LaTeX
+   * equivalent \textsuperscript{}.
    *************************************************************************/
   yytext[yyleng - 6] = 0;
   printf("\\textsuperscript{%s}", yytext + 5);
 }
+
 <PARA>"<sub>"[^<]*"</sub>" {
-  // SUBSCRIPT
   /**************************************************************************
+   * Support for the HTML tag <sub> within a paragraph. 
+   * Will convert the <sub> tag, along with all text within it, to the LaTeX
+   * equivalent \textsubscript{} 
    *************************************************************************/
   yytext[yyleng - 6] = 0; 
   printf("\\textsubscript{%s}", yytext + 5);
 }
 <PARA>"</p>" {
   /**************************************************************************
+   * Detects the end of the HTML paragraph </p>. In this case, to match LaTeX,
+   * it will just print two new lines. 
    *************************************************************************/
   printf("\n\n");
   BEGIN 0;
@@ -200,28 +227,42 @@ int list_type;
 
 "<ol>" {
   /**************************************************************************
+   * Support for the HTML tag <ol>. In this case, it will convert it to its 
+   * LaTeX equivalent, \begin{enumerate} and then BEGIN OL. Within OL, it
+   * supports the nesting of other HTML elements.
    *************************************************************************/
   printf("\\begin{enumerate}");
   BEGIN OL;
 }
+
 <OL>"</ol>" {
   /**************************************************************************
+   * Support to match the end of the <ol> element, </ol>. This will convert
+   * it to its LaTeX equivalent, ending the enumerate and calling BEGIN 0.
    *************************************************************************/
   printf("\\end{enumerate}\n");
   BEGIN 0;
 }
+
 <OL>"<li>" {
   /**************************************************************************
+   * Support to match the HTML element <li> within the ordered list element. 
+   * This will go ahead and convert the <li> tag to its LaTeX equivalent 
+   * \item, and BEGIN LI, since LI can also nest other elements. 
+   * 
+   * Additionally, it sets the list_type variable to 1, indicating that any 
+   * list item within will belong to this parent <ol>. 
    *************************************************************************/
   list_type = 1;
   printf("\\item ");
   BEGIN LI;
 }
 
-
-
 "<ul>" {
   /**************************************************************************
+   * Support for the HTML element <ul>. In this case, it will convert it to
+   * its LaTeX equivalent, \being{itemize}, and then BEGIN UL. Within UL, it
+   * supports the nesting of other HTML elements.
    *************************************************************************/
   printf("\\begin{itemize}");
   BEGIN UL;
@@ -229,12 +270,20 @@ int list_type;
 
 <UL>"</ul>" {
   /**************************************************************************
+   * Support to match the end of the <ul> element, </ul>. This will convert 
+   * it to its LaTeX equivalent, ending the itemize and calling BEGIN 0.
    *************************************************************************/
   printf("\\end{itemize}\n");
   BEGIN 0;
 }
+
 <UL>"<li>" {
   /**************************************************************************
+   * Support to match the HTML element <li> within the unordered list element. 
+   * This will go ahead and convert the <li> tag to its LaTeX equivalent 
+   * \item, and BEGIN LI, since LI can also nest other elements. 
+   * Additionally, it sets the list_type variable to 2, indicating that any 
+   * list item within will belong to this parent <ul>. 
    *************************************************************************/
   list_type = 2;
   printf("\\item ");
@@ -242,57 +291,80 @@ int list_type;
 }
 
 <LI>"<small>"[^>]*"</small>" {
-  // LI SMALL
   /**************************************************************************
+   * Support for the HTML element <small> within the list element. 
+   * It will convert the <small> tag, along with all text within, into its 
+   * LaTeX equivalent \scriptsize. 
    *************************************************************************/
   yytext[yyleng-8] = 0;
   printf("{\\scriptsize %s}", yytext + 7);
 }
+
 <LI>"<big>"[^>]*"</big>" {
-  // LI BIG
   /**************************************************************************
+   * Support for the HTML element <big> within the list element. 
+   * It will convert the <big> tag, along with all text within, into its 
+   * LaTeX equivalent \Large.
    *************************************************************************/
   yytext[yyleng - 6] = 0;
   printf("{\\Large %s}", yytext + 5);
 }
+
 <LI>"<b>"[^>]*"</b>" { 
-  // LI BOLD
   /**************************************************************************
+   * Support for the HTML element <b> within the list element. 
+   * It will convert the <b> tag, along with all text within it, into its 
+   * LaTeX equivalent \textbf{}.
    *************************************************************************/
   yytext[yyleng-4] = 0;
   printf("\\textbf{%s}", yytext+3);
 }
+
 <LI>"<i>"[^>]*"</i>" {
-  // ITALICIZE
   /**************************************************************************
+   * Support for the HTML element <i> within the list element. 
+   * It will convert the <i> tag, along with all text within it, into its 
+   * LaTeX equivalent \textit{}.
    *************************************************************************/
   yytext[yyleng - 4] = 0; 
   printf("\\textit{%s}", yytext + 3);
 }
+
 <LI>"<strong>"[^>]*"</strong>" {
-  // STRONG
   /**************************************************************************
+   * Support for the HTML element <strong> within the list element. 
+   * It will convert the <strong> tag, along with all text within it, into its
+   * LaTeX equivalent \textmd{}.
    *************************************************************************/
   yytext[yyleng - 9] = 0;
   printf("\\textmd{%s}", yytext + 8);
 }
+
 <LI>"<em>"[^>]*"</em>" {
-  // EMPHASIZE
   /**************************************************************************
+  * Support for the HTML element <em> within the list element. 
+  * It will convert the <em> tag, along with all text within it, into its 
+  * LaTeX equivalent \emph{}.
    *************************************************************************/
   yytext[yyleng - 5] = 0;
   printf("\\emph{%s}", yytext + 4);
 }
+
 <LI>"<sup>"[^>]*"</sup>" {
-  // SUPERSCRIPT
   /**************************************************************************
+   * Support for the HTML element <sup> within the list element. 
+   * It will convert the <sup> tag, along with all text within it, into its
+   * LaTeX equivalent \textsuperscript{}.
    *************************************************************************/
   yytext[yyleng - 6] = 0;
   printf("\\textsuperscript{%s}", yytext + 5);
 }
+
 <LI>"<sub>"[^>]*"</sub>" {
-  // SUBSCRIPT
   /**************************************************************************
+   * Support for the HTML element <sub> within the list element .
+   * It will convert the <sub> element, along with all text within it, into its
+   * LaTeX equivalent \textsubscript{}.
    *************************************************************************/
   yytext[yyleng - 6] = 0; 
   printf("\\textsubscript{%s}", yytext + 5);
@@ -301,6 +373,13 @@ int list_type;
 
 <LI>"</li>" {
   /**************************************************************************
+   * Support to end the HTML <li> element </li>. In this case, it will just
+   * print a newline. 
+   *
+   * Additionally, it will also check the list type variable that was set earlier. 
+   * This is done in order to jump back and jump (BEGIN) the correct list that this <li>
+   * element is nested within, since both <ol> and <ul> can support multiple <li>
+   * elements. 
    *************************************************************************/
   printf("\n");
   if (list_type == 1) {
