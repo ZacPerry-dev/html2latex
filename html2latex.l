@@ -227,8 +227,6 @@ int list_type;
   BEGIN 0;
 }
 
-
-
 "<ol>" {
   /**************************************************************************
    * Support for the HTML tag <ol>. In this case, it will convert it to its 
