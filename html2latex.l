@@ -1,4 +1,8 @@
 %{
+// COSC 561 Assignment 1: Lex
+// Zachary Perry
+// 09/21/2024
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
